@@ -4,3 +4,4 @@ gdown
 pillow
 torch
 torchvision
+Flask
