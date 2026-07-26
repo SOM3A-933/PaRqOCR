@@ -8,6 +8,20 @@ import gdown
 import re
 import shutil
 import uuid
+from flask import Flask
+from threading import Thread
+
+# --- Web Server to keep Render Free Tier alive ---
+app = Flask(__name__)
+@app.route('/')
+def home():
+    return "Bot is running on Render!"
+def run():
+    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 8080)))
+def keep_alive():
+    t = Thread(target=run)
+    t.start()
+# ------------------------------------------------
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -102,6 +116,9 @@ async def extract(ctx, drive_link: str = None):
         if os.path.exists(temp_dir):
             shutil.rmtree(temp_dir)
 
-# بيسحب التوكن أمان من إعدادات السيرفر
+# Start the web server
+keep_alive()
+
+# Run the bot
 TOKEN = os.getenv('DISCORD_TOKEN')
 bot.run(TOKEN)
